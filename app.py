@@ -2,15 +2,37 @@ import streamlit as st
 from datetime import date
 
 # --- CONFIGURATION ---
-# Target date is fixed here
-TARGET_DATE = date(2026, 5, 1) 
+TARGET_DATE = date(2026, 5, 1)
 TITLE = "Milte hain bahut jaldi!🫶"
-# ---------------------
+VALID_USER = "Nanugolu"
+VALID_PASS = "2201200403092004"
 
-def main():
+def check_password():
+    """Returns True if the user had the correct password."""
+    if "authenticated" not in st.session_state:
+        st.session_state["authenticated"] = False
+
+    if st.session_state["authenticated"]:
+        return True
+
+    # Login UI
+    st.title("🔒 Private Access")
+    user_input = st.text_input("User ID")
+    pass_input = st.text_input("Password", type="password")
+    
+    if st.button("Login"):
+        if user_input == VALID_USER and pass_input == VALID_PASS:
+            st.session_state["authenticated"] = True
+            st.rerun() # Refresh to show the timer
+        else:
+            st.error("Invalid User ID or Password")
+    
+    return False
+
+def show_timer():
+    # This is your existing timer code exactly as it was
     st.set_page_config(page_title="Countdown", layout="centered")
     
-    # Custom CSS for a beautiful look
     st.markdown("""
         <style>
         .timer-card {
@@ -38,5 +60,6 @@ def main():
         </div>
     """, unsafe_allow_html=True)
 
-if __name__ == "__main__":
-    main()
+# --- MAIN LOGIC ---
+if check_password():
+    show_timer()
