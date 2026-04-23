@@ -1,17 +1,22 @@
 import streamlit as st
 from datetime import date
+import pandas as pd  # Necessary for the India Timezone adjustment
 
 # --- CONFIGURATION ---
+# The target date and the specific title you requested
 TARGET_DATE = date(2026, 5, 1)
 TITLE = "Milte hain bahut jaldi!🫶"
+
+# Your specific credentials
 VALID_USER = "Nanugolu"
 VALID_PASS = "2201200403092004"
 
 def check_password():
-    """Returns True if the user had the correct password."""
+    """Handles the secure login gate."""
     if "authenticated" not in st.session_state:
         st.session_state["authenticated"] = False
 
+    # If already logged in, skip the login screen
     if st.session_state["authenticated"]:
         return True
 
@@ -23,16 +28,18 @@ def check_password():
     if st.button("Login"):
         if user_input == VALID_USER and pass_input == VALID_PASS:
             st.session_state["authenticated"] = True
-            st.rerun() # Refresh to show the timer
+            st.rerun() 
         else:
             st.error("Invalid User ID or Password")
     
     return False
 
 def show_timer():
-    # This is your existing timer code exactly as it was
+    """The colorful interface of your countdown timer."""
+    # Page setup
     st.set_page_config(page_title="Countdown", layout="centered")
     
+    # Custom CSS for the colorful UI
     st.markdown("""
         <style>
         .timer-card {
@@ -49,9 +56,11 @@ def show_timer():
         </style>
     """, unsafe_allow_html=True)
 
-    today = date.today()
+    # DYNAMIC TIMEZONE LOGIC: Fetches 'today' specifically for India
+    today = pd.Timestamp.now(tz='Asia/Kolkata').date()
     delta = (TARGET_DATE - today).days
 
+    # The HTML/CSS for the colorful card
     st.markdown(f"""
         <div class="timer-card">
             <div class="title">{TITLE}</div>
@@ -60,6 +69,9 @@ def show_timer():
         </div>
     """, unsafe_allow_html=True)
 
-# --- MAIN LOGIC ---
-if check_password():
-    show_timer()
+# --- MAIN EXECUTION ---
+if __name__ == "__main__":
+    # First, check if the person has logged in
+    if check_password():
+        # Only if logged in, show the actual timer
+        show_timer()
